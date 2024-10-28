@@ -1,7 +1,3 @@
-from calendar import c
-from pickletools import read_uint1
-
-
 type index = int
 type neighbor = tuple[index, float]
 type Matrix = list[list[neighbor]]
