@@ -2,6 +2,7 @@ import json
 from math import sqrt
 from .tsp import Matrix
 from pathlib import Path
+from source.helpers import file_path
 
 def parse(input: str) -> Matrix:
     
@@ -21,8 +22,14 @@ def parse(input: str) -> Matrix:
     matrix = [list(sorted(row)) for row in matrix]
     
     # Cache for future use
-    path_to_cache = Path(__file__).parent.joinpath("./cache.txt")
-    path_to_cache.touch(0o666)
-    path_to_cache.write_text(json.dumps(matrix))
+    if __name__ == "__main__":
+        path_to_cache = Path(__file__).parent.joinpath("./cache.txt")
+        path_to_cache.touch(0o666)
+        path_to_cache.write_text(json.dumps(matrix))
 
     return matrix
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input", help="path to input file", type=file_path)
