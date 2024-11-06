@@ -1,64 +1,60 @@
+from functools import lru_cache
+from math import sqrt
+
 type index = int
-type neighbor = tuple[index, float]
-type Matrix = list[list[neighbor]]
+type node = tuple[index, int, int]
+type Matrix = list[list[node]]
 
 
-def tsp(matrix: Matrix, home_index: index) -> tuple[float, list[index]]:
+def tsp(matrix: Matrix, home_node: node) -> tuple[float, list[index]]:
     """
     Greedy algorithm for traveling salesman problem
 
-    :param matrix: adjacency matrix in which neighbors are in format [index, distance] sorted by distance
+    :param matrix: adjacency matrix in which nodex are in format [x, y] sorted by distance
     :param home_index: id of node from which the salesman starts and returns to at the end
 
     :return: path length, indexes 
     """
     # Initialization
-    visited_nodes: set[index] = {home_index}
-    path: list[index] = [home_index]
+    visited_nodes: set[index] = {home_node[0]}
+    path: list[index] = [home_node[0]]
     path_length: float = 0.
 
     nodes_to_visit: int = len(matrix)
-    current_position: index = home_index
+    current_position: node = home_node
 
     # Traveling
     while len(visited_nodes) < nodes_to_visit:
-        next_destination, distance = find_next_destination(
-            matrix[current_position], visited_nodes)
-
+        next_destination = find_next_destination(
+            matrix[current_position[0]], visited_nodes)
+        next_index, x, y = next_destination
         # region travel
-        visited_nodes.add(next_destination)
-        path.append(next_destination)
-        path_length += distance
+        visited_nodes.add(next_index)
+        path.append(next_index)
+        path_length += distance(current_position, next_destination)
 
         current_position = next_destination
 
         # endregion travel
 
     # Going back home
-    [_, distance_home] = find_by_index(matrix[current_position], home_index)
-    path.append(home_index)
-    path_length += distance_home
+    path.append(home_node[0])
+    path_length += distance(current_position, home_node)
 
     return path_length, path
 
 
-def find_next_destination(neighbors: list[neighbor], visited_nodes: set[index]) -> neighbor:
+def find_next_destination(neighbors: list[node], visited_nodes: set[index]) -> node:
     """
     Helper getting next unvisited neighbor
     """
-    for neighbor_index, neighbor_distance in neighbors:
+    for neighbor_index, neighbor_x, neighbor_y in neighbors:
         if neighbor_index not in visited_nodes:
-            return neighbor_index, neighbor_distance
+            return neighbor_index, neighbor_x, neighbor_y
 
     raise ValueError("No unvisited neighbors")
 
 
-def find_by_index(neighbors: list[neighbor], node_index: index) -> neighbor:
-    """
-    Finds neighbor in list by node index, not index in list
-    """
-    for neighbor in neighbors:
-        if neighbor[0] == node_index:
-            return neighbor
-
-    raise ValueError(f"Neighbor of index {node_index} not present")
+@lru_cache
+def distance(a: node, b: node) -> float:
+    return sqrt((a[1]-b[1])**2+(a[2]-b[2])**2)
