@@ -7,6 +7,7 @@ from source.helpers import file_path
 def parse(input: str) -> tuple[Matrix, list[node]]:
     """
     :returns: adjacency matrix and node lookup table (by index)
+    Indexes start at 1
     """
     positions: list[node] = []
     """index, x coord, y coord"""

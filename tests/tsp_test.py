@@ -36,7 +36,7 @@ class TestTSP(unittest.TestCase):
 
         distance, path = tsp.tsp(matrix, (0, 0, 0))
         self.assertAlmostEqual(distance, 16.008766790362)
-        self.assertEqual(path, [0, 1, 3, 2, 0])
+        self.assertEqual(path, [0, 1, 3, 2])
 
     def test_find_next_destination(self) -> None:
         for _ in range(100):

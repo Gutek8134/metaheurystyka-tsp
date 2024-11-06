@@ -38,7 +38,6 @@ def tsp(matrix: Matrix, home_node: node) -> tuple[float, list[index]]:
         # endregion travel
 
     # Going back home
-    path.append(home_node[0])
     path_length += distance(current_position, home_node)
 
     return path_length, path
