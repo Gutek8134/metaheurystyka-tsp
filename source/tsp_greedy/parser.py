@@ -1,11 +1,14 @@
 import json
 from math import sqrt
-from .tsp import Matrix
+from .tsp import Matrix, node, distance
 from pathlib import Path
 from source.helpers import file_path
 
-def parse(input: str) -> Matrix:
-    positions: list[tuple[int, int, int]] = []
+def parse(input: str) -> tuple[Matrix, list[node]]:
+    """
+    :returns: adjacency matrix and node lookup table (by index)
+    """
+    positions: list[node] = []
     """index, x coord, y coord"""
 
     for line in input.splitlines()[1:]:
@@ -19,7 +22,8 @@ def parse(input: str) -> Matrix:
             matrix[index-1].append((other_index, other_x_coord, other_y_coord))
             matrix[other_index-1].append((index, x_coord, y_coord))
 
-    matrix = [list(sorted(row)) for row in matrix]
+    for row_index, row in enumerate(matrix):
+        matrix[row_index] = list(sorted(row, key=lambda x: distance(positions[row_index], x)))
     
     # Cache for future use
     if __name__ == "__main__":
@@ -30,7 +34,7 @@ def parse(input: str) -> Matrix:
         path_to_cache.touch(0o666)
         path_to_cache.write_text(json.dumps(positions))
 
-    return matrix
+    return matrix, positions
 
 if __name__ == "__main__":
     import argparse
