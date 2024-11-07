@@ -3,7 +3,6 @@ Helpers to map TSP solution space into a 2d space
 https://core.ac.uk/download/pdf/81128867.pdf
 """
 from itertools import cycle, islice
-from operator import le
 from ..tsp_greedy.tsp import index
 
 
@@ -44,3 +43,30 @@ def get_coordinates(path: list[index]) -> tuple[int, int]:
                 break
 
     return y, x
+
+def get_path(x: int, y: int, number_of_cities: int)->list[index]:
+    x_copy: int = x
+    y_copy: int = y
+    bag: list[int] = list(range(2, number_of_cities+1))
+    path: list[index] = [1]
+
+    for i in range(1, number_of_cities-1):
+        block: int = 1
+        if i%2 == 0:
+            for k in range(3, number_of_cities-i-1, 2):
+                block*=k
+            position: int = y_copy//block
+            y_copy -= position*block
+        else:
+            for k in range(2, number_of_cities-i-1, 2):
+                block *= k
+            position: int = x_copy//block
+            x_copy -= position*block
+        
+        path.append(bag[position])
+        for j in range(position, number_of_cities-2):
+            bag[j] = bag[j+1]
+    
+    path.append(bag[0])
+
+    return path
