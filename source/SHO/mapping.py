@@ -29,7 +29,7 @@ def get_coordinates(path: list[index]) -> tuple[int, int]:
         for j in range(1, len(bag)):
             if path_index == bag[j]:
                 block = 1
-                if i % 2 != 0:
+                if i % 2 == 0:
                     for k in range(3, number_of_cities-i-1, 2):
                         block *= k
                     x += (j-1)*block
@@ -43,4 +43,4 @@ def get_coordinates(path: list[index]) -> tuple[int, int]:
                     bag[l] = bag[l+1]
                 break
 
-    return x, y
+    return y, x
