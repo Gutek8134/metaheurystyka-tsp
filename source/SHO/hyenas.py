@@ -1,16 +1,17 @@
 import asyncio
+from types import EllipsisType
 import numpy as np
 import random
-from itertools import c
 from source.tsp_greedy.tsp import node, index, distance
 from .mapping import get_coordinates, get_path
 
 # TODO: switch lists and tuples to np.array
 # TODO: async search
 
-def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_paths: list[list[index]]=..., initial_coordinates:list[tuple[int, int]]=...) -> list[node]:
+def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_paths: list[list[index]]|EllipsisType=..., initial_coordinates:list[tuple[int, int]]|EllipsisType=..., _number_of_cities:int|EllipsisType=...) -> list[node]:
 
     hyenas_positions: list[tuple[int, int]]
+    number_of_cities: int
 
     if initial_paths != ... and initial_coordinates != ...:
         raise ValueError("Both initial paths and initial coordinates are set")
@@ -19,16 +20,20 @@ def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_p
         if len(initial_paths) > number_of_hyenas:
             raise ValueError("There are more initial paths than hyenas")
         
-        if not (isinstance(initial_paths[0], list) and isinstance(initial_paths[0][0], index)):
+        if not (isinstance(initial_paths[0], list) and isinstance(initial_paths[0][0], int)):
             raise TypeError("Initial paths must be a list of lists of indexes")
         
-        hyenas_positions = list(map(initial_paths, get_coordinates))
+        hyenas_positions = list(map(get_coordinates, initial_paths))
+        number_of_cities = len(initial_paths[0])
 
     
     elif initial_paths != ...:
         raise TypeError("Initial paths are set and not a list")
     
     elif isinstance(initial_coordinates, list):
+        if not isinstance(_number_of_cities, int):
+            raise TypeError("When giving initial coordinates you have to supply number of cities")
+
         if len(initial_coordinates) > number_of_hyenas:
             raise ValueError("There are more initial coordinates than hyenas")
         
@@ -36,6 +41,7 @@ def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_p
             raise TypeError("Initial coordinates must be a list of tuples with x,y coordinates")
         
         hyenas_positions = initial_coordinates
+        number_of_cities = _number_of_cities
     
     elif initial_coordinates != ...:
         raise TypeError("Initial coordinates are set and not a list")
@@ -74,16 +80,15 @@ def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_p
         2*hunt_coefficient * random.uniform(0,1) - hunt_coefficient
     )
 
-    best_path_length = path_length(initial_paths[0])
-    best_path = initial_paths[0]
-    for path in initial_paths[1:]:
-        if (length := path_length(path)) < best_path_length:
+    best_path_length: float = path_length(get_path(*hyenas_positions[0], 1), nodes)
+    best_path: tuple[int, int] = hyenas_positions[0]
+    for path in hyenas_positions[1:]:
+        if (length := path_length(get_path(*path, number_of_cities), nodes)) < best_path_length:
             best_path = path
             best_path_length = length
 
     # Described as C_h group in papers
-    the_best_path: tuple[int, int] = get_coordinates(best_path)
-    best_paths: set[tuple[int, int]] = {the_best_path}
+    best_paths: set[tuple[int, int]] = {best_path}
 
     while iteration_count < max_iterations:
         # hunting
