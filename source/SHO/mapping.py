@@ -44,7 +44,8 @@ def get_coordinates(path: list[index]) -> tuple[int, int]:
 
     return y, x
 
-def get_path(x: int, y: int, number_of_cities: int)->list[index]:
+def get_path(path_position: tuple[int, int], number_of_cities: int)->list[index]:
+    x, y = path_position
     x_copy: int = x
     y_copy: int = y
     bag: list[int] = list(range(2, number_of_cities+1))
