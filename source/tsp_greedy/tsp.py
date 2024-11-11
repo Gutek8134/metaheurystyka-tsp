@@ -2,7 +2,7 @@ from functools import lru_cache
 from math import sqrt
 
 type index = int
-type node = tuple[index, int, int]
+type node = tuple[index, float, float]
 type Matrix = list[list[node]]
 
 

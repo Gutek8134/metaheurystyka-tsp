@@ -14,7 +14,7 @@ def parse(input: str) -> tuple[Matrix, list[node]]:
 
     for line in input.splitlines()[1:]:
         index, x, y = line.split(" ")
-        positions.append((int(index), int(x), int(y)))
+        positions.append((int(index), float(x), float(y)))
 
     matrix: Matrix = [[] for _ in range(len(positions))]
 
