@@ -10,7 +10,7 @@ def tsp(matrix: Matrix, home_node: node) -> tuple[float, list[index]]:
     """
     Greedy algorithm for traveling salesman problem
 
-    :param matrix: adjacency matrix in which nodex are in format [x, y] sorted by distance
+    :param matrix: adjacency matrix in which nodes are in format [x, y] sorted by distance
     :param home_index: id of node from which the salesman starts and returns to at the end
 
     :return: path length, indexes 
@@ -26,7 +26,7 @@ def tsp(matrix: Matrix, home_node: node) -> tuple[float, list[index]]:
     # Traveling
     while len(visited_nodes) < nodes_to_visit:
         next_destination = find_next_destination(
-            matrix[current_position[0]], visited_nodes)
+            matrix[current_position[0]-1], visited_nodes)
         next_index, x, y = next_destination
         # region travel
         visited_nodes.add(next_index)
