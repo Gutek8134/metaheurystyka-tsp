@@ -26,11 +26,8 @@ def random_instance(
         raise ValueError("Maximum y must be greater or equal minimum y")
 
     instance: str = str(size)
-    values: list[tuple[int, int]] = \
-        random.sample(
-        tuple(product(range(min_x, max_x+1),
-                      range(min_y, max_y+1))),
-        size)
+    values: list[tuple[int, int]] = [(random.randrange(
+        min_x, max_x+1), random.randrange(min_y, max_y+1)) for _ in range(size)]
 
     for i, (position_x, position_y) in enumerate(values, start=1):
         instance += f"\n{i} {position_x} {position_y}"

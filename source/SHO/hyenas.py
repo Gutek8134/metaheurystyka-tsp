@@ -63,7 +63,8 @@ def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_p
     # Make sure there are exactly specified number of hyenas, including initial prey
     if len(hyenas_positions) < number_of_hyenas-1:
 
-        additional_positions = ((random.randrange(0, max_x), random.randrange(0,max_y)) for _ in range(number_of_hyenas-1-len(hyenas_positions)))
+        additional_positions = ((random.randrange(0, max_x), random.randrange(
+            0, max_y)) for _ in range(number_of_hyenas-1-len(hyenas_positions)))
 
         hyenas_positions.extend(
             additional_positions
@@ -109,11 +110,13 @@ def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_p
             cluster_vector[0] += position[0]
             cluster_vector[1] = position[1]
 
-    if len(cluster) >0 :
+    if len(cluster) > 0:
         cluster_vector[0] //= len(cluster)
         cluster_vector[1] //= len(cluster)
 
     while iteration_count < max_iterations:
+        print(best_path_length, best_hyena_position)
+
         # Described as h vector in papers
         hunt_coefficient: float = 5 - ((iteration_count*5)/max_iterations)
 
@@ -168,7 +171,7 @@ def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_p
                 best_path_length = length
 
         # Update cluster
-        cluster_vector = [0,0]
+        cluster_vector = [0, 0]
         M: tuple[float, float] = random.uniform(0.5, 1), random.uniform(0.5, 1)
         for i, position in enumerate(hyenas_positions):
             if i == best_hyena_index:
@@ -186,13 +189,17 @@ def SHO(nodes: list[node], number_of_hyenas: int, max_iterations: int, initial_p
             cluster_vector[1] //= len(cluster)
 
         iteration_count += 1
-        print(f"{iteration_count}/{max_iterations}", end="\r")
 
     return list(map(lambda x: nodes[x-1], best_path))
 
 
-def path_length(path: list[int], nodes: list[node]):
-    return sum(distance(nodes[index-1], nodes[index]) if index != len(nodes) else distance(nodes[index-1], nodes[0]) for index in path)
+def path_length(path: list[int], nodes: list[node]) -> float:
+    cost: float = 0.
+    for path_index, city_index in enumerate(path[:-1]):
+        cost += distance(nodes[city_index], nodes[path[path_index+1]])
+    cost += distance(nodes[path[0]], nodes[path[-1]])
+
+    return cost
 
 
 def distance_vector(a: tuple[int, int], b: tuple[int, int], motion_blur: tuple[float, float]) -> tuple[float, float]:

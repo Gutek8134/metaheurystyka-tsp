@@ -5,6 +5,7 @@ https://core.ac.uk/download/pdf/81128867.pdf
 from itertools import cycle, islice
 from ..tsp_greedy.tsp import index
 
+#TODO: scientists can't code, rewrite
 
 def get_coordinates(path: list[index]) -> tuple[int, int]:
     """
@@ -17,7 +18,7 @@ def get_coordinates(path: list[index]) -> tuple[int, int]:
 
     # Shift path so it starts from 1
     path_from_1: list[index] = list(
-        islice(cycle(path), position_of_city_1, position_of_city_1+number_of_cities))
+        islice(cycle(path), position_of_city_1, position_of_city_1+number_of_cities)) if path[0] != 1 else path
 
     bag = list(range(1, number_of_cities+2))
 
