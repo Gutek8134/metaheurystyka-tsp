@@ -28,6 +28,19 @@ class TestMapping(unittest.TestCase):
                 (2, 4, 0)
             ]))
 
+    def test_subtract_paths(self):
+        path_a = np.array([0, 1, 2, 3, 4], np.uint32)
+        path_a_indexes = np.array([0, 1, 2, 3, 4], np.uint32)
+        path_b = np.array([1, 2, 0, 4, 3], np.uint32)
+        """
+        12043
+        21043
+        01243
+        01234
+        """
+        self.assertEqual([(0, 1), (2, 0), (3, 4)], mapping.subtract_paths(
+            path_b, path_a, path_a_indexes))
+
 
 if __name__ == "__main__":
     unittest.main()

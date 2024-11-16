@@ -87,7 +87,7 @@ class TestPSO(unittest.TestCase):
         path.insert(0, 0)
         length = path_length(path, nodes)
         pso_path, pso_length = PSO(nodes, np.array(
-            path, dtype=np.uint32), 50, 1000, 0.4, 0.7)
+            path, dtype=np.uint32), 50, 100, 0.4, 0.7)
 
         print("Random", length, path, flush=True)
         print("PSO", pso_length, pso_path, flush=True)

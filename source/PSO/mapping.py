@@ -23,8 +23,10 @@ def random_paths(number_of_paths: int, number_of_cities: int) -> set[tuple[int, 
     return paths
 
 
-def subtract_paths(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], path_a_indexes: NDArray[np.uint32]) -> list[tuple[int, int]]:
+def subtract_paths(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], path_b_indexes: NDArray[np.uint32]) -> list[tuple[int, int]]:
     """
+    Gives path_b - path_a
+
     :params:
     For indexes, if path looked like `[1,2,0]` you'd input `[2,0,1]`
 
@@ -36,7 +38,7 @@ def subtract_paths(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], path_
     for i, element in enumerate(path_b):
         if element != path_a_copy[i]:
             # Swap the elements in copy of path_a
-            cache = path_a_indexes[path_a_copy[i]]
+            cache = path_b_indexes[path_a_copy[i]]
             path_a_copy[[i, cache]
                         ] = path_a_copy[[cache, i]]
 

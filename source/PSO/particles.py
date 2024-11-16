@@ -78,8 +78,8 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
     for index, solution in enumerate(personal_bests):
 
         temp_personal_indexes = np.zeros((number_of_cities), dtype=np.uint32)
-        for i, city_index in enumerate(solution):
-            temp_personal_indexes[city_index] = i
+        for j, city_index in enumerate(solution):
+            temp_personal_indexes[city_index] = j
 
         personal_bests_indexes[index] = temp_personal_indexes
 
@@ -106,14 +106,14 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
 
         global_best_indexes = temp_global_indexes
 
-        for i, particle_path in enumerate(particle_solutions):
+        for j, particle_path in enumerate(particle_solutions):
             # (pbest - x(t-1))
             pbest_difference: list[tuple[int, int]] = subtract_paths(
-                personal_bests[i], particle_path, personal_bests_indexes[i])
+                particle_path, personal_bests[j], personal_bests_indexes[j])
 
             # (gbest - x(t-1))
             gbest_difference: list[tuple[int, int]] = subtract_paths(
-                global_best, particle_path, global_best_indexes)
+                particle_path, global_best, global_best_indexes)
 
             for swap_operator in pbest_difference:
                 if random.random() <= alpha:
@@ -130,16 +130,16 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
             # Update personal best
             new_path_length = path_length(nodes, particle_path)
             # print(i, personal_best_lengths[i], new_path_length)
-            if personal_best_lengths[i] > new_path_length:
-                personal_bests[i] = particle_path
-                personal_best_lengths[i] = new_path_length
+            if personal_best_lengths[j] > new_path_length:
+                personal_bests[j] = particle_path
+                personal_best_lengths[j] = new_path_length
 
                 # Update indexes
                 temp_personal_indexes = np.zeros(
                     (number_of_cities), dtype=np.uint32)
-                for i, city_index in enumerate(solution):
-                    temp_personal_indexes[city_index] = i
-                personal_bests_indexes[i] = temp_personal_indexes
+                for k, city_index in enumerate(solution):
+                    temp_personal_indexes[city_index] = k
+                personal_bests_indexes[j] = temp_personal_indexes
 
         print(f"\riteration {iteration_count+1}/{max_iterations}", end="")
     print()
