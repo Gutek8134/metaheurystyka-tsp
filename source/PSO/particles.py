@@ -77,11 +77,11 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
     # Indexes initialization
     for index, solution in enumerate(personal_bests):
 
-        indexes = np.zeros((number_of_cities), dtype=np.uint32)
+        temp_personal_indexes = np.zeros((number_of_cities), dtype=np.uint32)
         for i, city_index in enumerate(solution):
-            indexes[city_index] = i
+            temp_personal_indexes[city_index] = i
 
-        personal_bests_indexes[index] = indexes
+        personal_bests_indexes[index] = temp_personal_indexes
 
     # print(personal_best_lengths)
     # endregion initialization
@@ -100,11 +100,11 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
         evolutions[iteration_count] = global_best
         evolutions_costs[iteration_count] = global_best_length
 
-        indexes = np.zeros((number_of_cities), dtype=np.uint32)
+        temp_global_indexes = np.zeros((number_of_cities), dtype=np.uint32)
         for i, city_index in enumerate(global_best):
-            indexes[city_index] = i
+            temp_global_indexes[city_index] = i
 
-        global_best_indexes = indexes
+        global_best_indexes = temp_global_indexes
 
         for i, particle_path in enumerate(particle_solutions):
             # (pbest - x(t-1))
@@ -133,6 +133,13 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
             if personal_best_lengths[i] > new_path_length:
                 personal_bests[i] = particle_path
                 personal_best_lengths[i] = new_path_length
+
+                # Update indexes
+                temp_personal_indexes = np.zeros(
+                    (number_of_cities), dtype=np.uint32)
+                for i, city_index in enumerate(solution):
+                    temp_personal_indexes[city_index] = i
+                personal_bests_indexes[i] = temp_personal_indexes
 
         print(f"\riteration {iteration_count+1}/{max_iterations}", end="")
     print()

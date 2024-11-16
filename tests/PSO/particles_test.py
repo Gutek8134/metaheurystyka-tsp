@@ -72,11 +72,11 @@ class TestPSO(unittest.TestCase):
 
         length, path = tsp(matrix, nodes[0])
         pso_path, pso_length = PSO(nodes, np.array(
-            path, dtype=np.uint32), 500, 1000, 0.7, 0.9)
+            path, dtype=np.uint32), 50, 1000, 0.7, 0.9)
 
         print(flush=True)
-        print(length, path)
-        print(pso_length, pso_path)
+        print("Greedy", length, path)
+        print("PSO", pso_length, pso_path)
 
     def test_random_instance_random(self):
         print()
