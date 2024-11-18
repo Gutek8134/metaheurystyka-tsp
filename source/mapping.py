@@ -8,6 +8,10 @@ import numpy as np
 from numpy.typing import NDArray
 import random
 
+type index = int
+type node = tuple[index, float, float]
+type Matrix = list[list[node]]
+
 
 def random_paths(number_of_paths: int, number_of_cities: int) -> set[tuple[int, ...]]:
     """
@@ -62,6 +66,19 @@ def path_length(nodes: NDArray, path: NDArray[np.uint32]) -> float:
     cost += distance(nodes[path[0]], nodes[path[-1]])
 
     return cost
+
+
+def node_path_length(nodes: list[node], path: list[int]) -> float:
+    cost: float = 0.
+    for path_index, city_index in enumerate(path[:-1]):
+        cost += node_distance(nodes[city_index], nodes[path[path_index+1]])
+    cost += node_distance(nodes[path[0]], nodes[path[-1]])
+
+    return cost
+
+
+def node_distance(a: node, b: node) -> float:
+    return sqrt((a[1]-b[1])**2+(a[2]-b[2])**2)
 
 
 def distance(a: NDArray, b: NDArray) -> float:

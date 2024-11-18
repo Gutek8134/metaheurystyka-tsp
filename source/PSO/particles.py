@@ -7,7 +7,7 @@ https://github.com/nsn39/particle-swarm/
 import random
 import numpy as np
 from numpy.typing import NDArray, ArrayLike
-from .mapping import random_paths, path_length, subtract_paths
+from ..mapping import random_paths, path_length, subtract_paths
 
 node_type = np.dtype(
     [("index", np.uint32), ("x", np.double), ("y", np.double)])

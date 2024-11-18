@@ -1,5 +1,4 @@
 import random
-from itertools import product
 
 
 def random_instance(
@@ -26,8 +25,19 @@ def random_instance(
         raise ValueError("Maximum y must be greater or equal minimum y")
 
     instance: str = str(size)
-    values: list[tuple[int, int]] = [(random.randrange(
-        min_x, max_x+1), random.randrange(min_y, max_y+1)) for _ in range(size)]
+    values: set[tuple[int, int]] = set()
+
+    for _ in range(size):
+        possible_value = (random.randrange(min_x, max_x+1),
+                          random.randrange(min_y, max_y+1))
+        iteration = 0
+
+        while possible_value in values:
+            possible_value = possible_value[0]+1 if possible_value[0]+1 <= max_x else random.randrange(
+                min_x, max_x+1), possible_value[1]+1 if possible_value[1]+1 <= max_x else random.randrange(min_y, max_y+1)
+            iteration += 1
+
+        values.add(possible_value)
 
     for i, (position_x, position_y) in enumerate(values, start=1):
         instance += f"\n{i} {position_x} {position_y}"

@@ -1,9 +1,4 @@
-from functools import lru_cache
-from math import sqrt
-
-type index = int
-type node = tuple[index, float, float]
-type Matrix = list[list[node]]
+from source.mapping import node_distance, Matrix, node, index
 
 
 def tsp(matrix: Matrix, home_node: node) -> tuple[float, list[index]]:
@@ -31,14 +26,14 @@ def tsp(matrix: Matrix, home_node: node) -> tuple[float, list[index]]:
         # region travel
         visited_nodes.add(next_index)
         path.append(next_index)
-        path_length += distance(current_position, next_destination)
+        path_length += node_distance(current_position, next_destination)
 
         current_position = next_destination
 
         # endregion travel
 
     # Going back home
-    path_length += distance(current_position, home_node)
+    path_length += node_distance(current_position, home_node)
 
     return path_length, path
 
@@ -52,8 +47,3 @@ def find_next_destination(neighbors: list[node], visited_nodes: set[index]) -> n
             return neighbor_index, neighbor_x, neighbor_y
 
     raise ValueError("No unvisited neighbors")
-
-
-@lru_cache
-def distance(a: node, b: node) -> float:
-    return sqrt((a[1]-b[1])**2+(a[2]-b[2])**2)

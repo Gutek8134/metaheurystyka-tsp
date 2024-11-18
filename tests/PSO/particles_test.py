@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 
 from source.PSO.particles import PSO, path_length as PSO_path_length, node_type
-from source.SHO.hyenas import path_length
+from source.mapping import node_path_length
 from source.instance_generator import random_instance
 from source.tsp_greedy.parser import parse
 from source.tsp_greedy.tsp import tsp
@@ -59,7 +59,7 @@ class TestPSO(unittest.TestCase):
         path = list(range(1, 14))
         random.shuffle(path)
         path.insert(0, 0)
-        length = path_length(path, nodes)
+        length = node_path_length(nodes, path)
         pso_path, pso_length = PSO(nodes, np.array(
             path, dtype=np.uint32), 50, 1000, 0.4, 0.7)
 
@@ -85,7 +85,7 @@ class TestPSO(unittest.TestCase):
         path = list(range(1, 100))
         random.shuffle(path)
         path.insert(0, 0)
-        length = path_length(path, nodes)
+        length = node_path_length(nodes, path)
         pso_path, pso_length = PSO(nodes, np.array(
             path, dtype=np.uint32), 50, 100, 0.4, 0.7)
 

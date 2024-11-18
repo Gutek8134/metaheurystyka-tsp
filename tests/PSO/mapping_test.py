@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 from source.PSO.particles import node_type
-import source.PSO.mapping as mapping
+import source.mapping as mapping
 import source.SHO.hyenas as hyenas
 
 
@@ -22,11 +22,11 @@ class TestMapping(unittest.TestCase):
                     (2, 4, 0)
                 ], dtype=node_type),
                 np.array((0, 1, 2), dtype=np.uint32)
-            ), hyenas.path_length([0, 1, 2], [
+            ), mapping.node_path_length([
                 (0, 0, 0),
                 (1, 0, 3),
                 (2, 4, 0)
-            ]))
+            ], [0, 1, 2]))
 
     def test_subtract_paths(self):
         path_a = np.array([0, 1, 2, 3, 4], np.uint32)
