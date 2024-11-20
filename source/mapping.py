@@ -24,6 +24,8 @@ def random_paths(number_of_paths: int, number_of_cities: int) -> set[tuple[int, 
 
     for _ in range(number_of_paths):
         random.shuffle(cities)
+        while (tuple([0]+cities)) in paths:
+            random.shuffle(cities)
         paths.add(tuple([0]+cities))
 
     return paths

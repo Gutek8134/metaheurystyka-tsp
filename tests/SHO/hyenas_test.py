@@ -15,11 +15,15 @@ class TestPSO(unittest.TestCase):
 
     def test_random_instance_greedy(self):
         print()
-        matrix, nodes = parse(random_instance(100, max_x=1000, max_y=1000))
+        instance_size = 100
+        matrix, nodes = parse(random_instance(
+            instance_size, max_x=1000, max_y=1000))
 
         length, path = tsp(matrix, nodes[0])
         pso_path, pso_length = SHO(nodes, np.array(
             path, dtype=np.uint32), 50, 1000, 0.7, 5, blur_length=9)
+
+        self.assertEqual(len(set(pso_path)), instance_size)
 
         print(flush=True)
         print("Greedy", length, path)
@@ -27,14 +31,18 @@ class TestPSO(unittest.TestCase):
 
     def test_random_instance_random(self):
         print()
-        _, nodes = parse(random_instance(100, max_x=1000, max_y=1000))
+        instance_size = 100
+        _, nodes = parse(random_instance(
+            instance_size, max_x=1000, max_y=1000))
 
-        path = list(range(1, 100))
+        path = list(range(1, instance_size))
         random.shuffle(path)
         path.insert(0, 0)
         length = node_path_length(path, nodes)
         pso_path, pso_length = SHO(nodes, np.array(
             path, dtype=np.uint32), 50, 100, 0.7, 5)
+
+        self.assertEqual(len(set(pso_path)), instance_size)
 
         print("Random", length, path, flush=True)
         print("SHO", pso_length, pso_path, flush=True)

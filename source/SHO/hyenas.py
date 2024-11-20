@@ -71,7 +71,11 @@ def SHO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
         # Update cluster
         cluster_hyenas_indexes, = (distance_from_prey <= np.random.uniform(
             0.5, 1, (population_size))*max_distance_coefficient).nonzero()
-        cluster: NDArray[np.uint32] = hyenas_population[cluster_hyenas_indexes]
+        cluster: NDArray[np.uint32]
+        if cluster_hyenas_indexes.size > 0:
+            cluster = hyenas_population[cluster_hyenas_indexes]
+        else:
+            cluster = np.array([], dtype=np.uint32)
 
         # Counts how many times each city appeared at the position
         cluster_counts = [np.array([np.count_nonzero(cluster[:, i] == j) for j in range(number_of_cities)], dtype=np.uint32)
@@ -84,9 +88,12 @@ def SHO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
         # As much as I'd want to vectorize, I'm unable to
         available_positions = np.ones(number_of_cities, dtype=np.uint32)
         for i in range(number_of_cities):
-            average_cluster_position[i] = np.where(available_positions > 0, cluster_counts[i], 0).argmax(
-            )
-            available_positions[average_cluster_position[i]] = 0
+            temp = np.where(available_positions > 0,
+                            cluster_counts[i], 0).argmax()
+            if available_positions[temp] == 0:
+                temp = np.where(available_positions == 1)[0][0]
+            average_cluster_position[i] = temp
+            available_positions[temp] = 0
 
         hyenas_population[cluster_hyenas_indexes] = average_cluster_position
 
