@@ -16,17 +16,17 @@ class TestMapping(unittest.TestCase):
 
         self.assertAlmostEqual(
             mapping.path_length(
+                np.array((0, 1, 2), dtype=np.uint32),
                 np.array([
                     (0, 0, 0),
                     (1, 0, 3),
                     (2, 4, 0)
-                ], dtype=node_type),
-                np.array((0, 1, 2), dtype=np.uint32)
-            ), mapping.node_path_length([
+                ], dtype=node_type)
+            ), mapping.node_path_length([0, 1, 2], [
                 (0, 0, 0),
                 (1, 0, 3),
                 (2, 4, 0)
-            ], [0, 1, 2]))
+            ]))
 
     def test_subtract_paths(self):
         path_a = np.array([0, 1, 2, 3, 4], np.uint32)

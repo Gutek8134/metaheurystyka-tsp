@@ -59,7 +59,7 @@ class TestPSO(unittest.TestCase):
         path = list(range(1, 14))
         random.shuffle(path)
         path.insert(0, 0)
-        length = node_path_length(nodes, path)
+        length = node_path_length(path, nodes)
         pso_path, pso_length = PSO(nodes, np.array(
             path, dtype=np.uint32), 50, 1000, 0.4, 0.7)
 
@@ -85,7 +85,7 @@ class TestPSO(unittest.TestCase):
         path = list(range(1, 100))
         random.shuffle(path)
         path.insert(0, 0)
-        length = node_path_length(nodes, path)
+        length = node_path_length(path, nodes)
         pso_path, pso_length = PSO(nodes, np.array(
             path, dtype=np.uint32), 50, 100, 0.4, 0.7)
 

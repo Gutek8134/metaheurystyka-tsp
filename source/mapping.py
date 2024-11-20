@@ -12,6 +12,8 @@ type index = int
 type node = tuple[index, float, float]
 type Matrix = list[list[node]]
 
+rng: np.random.Generator = np.random.default_rng()
+
 
 def random_paths(number_of_paths: int, number_of_cities: int) -> set[tuple[int, ...]]:
     """
@@ -52,7 +54,11 @@ def subtract_paths(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], path_
     return difference
 
 
-def path_length(nodes: NDArray, path: NDArray[np.uint32]) -> float:
+def random_swap_sequence(number_of_cities: int, length: int) -> NDArray[np.uint32]:
+    return np.asarray(rng.choice(a=number_of_cities, size=(2, length), replace=False), dtype=np.uint32)
+
+
+def path_length(path: NDArray[np.uint32], nodes) -> float:
     """
     Calculate length of path using euclidean distance
 
@@ -68,7 +74,7 @@ def path_length(nodes: NDArray, path: NDArray[np.uint32]) -> float:
     return cost
 
 
-def node_path_length(nodes: list[node], path: list[int]) -> float:
+def node_path_length(path: list[int], nodes: list[node]) -> float:
     cost: float = 0.
     for path_index, city_index in enumerate(path[:-1]):
         cost += node_distance(nodes[city_index], nodes[path[path_index+1]])
