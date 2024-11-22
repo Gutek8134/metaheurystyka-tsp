@@ -36,8 +36,8 @@ def SHO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
     hyenas_indexes: NDArray[np.uint32] = np.zeros(
         (population_size, number_of_cities), dtype=np.uint32)
 
-    for i in range(population_size):
-        for j, city_index in enumerate(hyenas_population):
+    for i, row in enumerate(hyenas_population):
+        for j, city_index in enumerate(row):
             hyenas_indexes[i][city_index] = j
 
     # endregion initialization
@@ -114,8 +114,8 @@ def SHO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
         hyenas_fitness = np.apply_along_axis(
             path_length, 1, hyenas_population, nodes=nodes)
 
-        for i in range(population_size):
-            for j, city_index in enumerate(hyenas_population):
+        for i, row in enumerate(hyenas_population):
+            for j, city_index in enumerate(row):
                 hyenas_indexes[i][city_index] = j
 
         prey_index = hyenas_fitness.argmin()
