@@ -31,7 +31,7 @@ def random_paths(number_of_paths: int, number_of_cities: int) -> set[tuple[int, 
     return paths
 
 
-def subtract_paths(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], path_b_indexes: NDArray[np.uint32]) -> list[tuple[int, int]]:
+def subtract_paths(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], path_b_indexes: NDArray[np.uint32] | NDArray[np.intp]) -> list[tuple[int, int]]:
     """
     Gives path_b - path_a
 
@@ -54,6 +54,30 @@ def subtract_paths(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], path_
             difference.append((i, int(cache)))
 
     return difference
+
+
+def path_difference_length(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], path_b_indexes: NDArray[np.uint32] | NDArray[np.intp]) -> int:
+    return max(len(subtract_paths(path_a, path_b, path_b_indexes)), 1)
+
+
+def mutate(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], factor: float, number_of_cities: int) -> NDArray[np.uint32]:
+    mutated_path: NDArray[np.uint32] = np.where(np.random.uniform(
+        0, 1, number_of_cities) <= factor, path_a, path_b)
+
+    unique_elements, counts = np.unique_counts(mutated_path)
+
+    if len(unique_elements) == number_of_cities and np.all(unique_elements == np.arange(number_of_cities)):
+        return mutated_path
+
+    missing_elements = np.append(np.arange(number_of_cities)[~np.isin(np.arange(
+        number_of_cities), unique_elements, assume_unique=True)], unique_elements[counts > 1])
+
+    np.random.shuffle(missing_elements)
+
+    mutated_path[np.isin(
+        mutated_path, unique_elements[counts > 1])] = missing_elements
+
+    return mutated_path
 
 
 def random_swap_sequence(number_of_cities: int, length: int) -> NDArray[np.uint32]:

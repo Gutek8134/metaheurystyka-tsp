@@ -37,8 +37,8 @@ def SHO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
         (population_size, number_of_cities), dtype=np.uint32)
 
     for i, row in enumerate(hyenas_population):
-        for j, city_index in enumerate(row):
-            hyenas_indexes[i][city_index] = j
+        hyenas_indexes[i] = np.unique(
+            hyenas_population[i], return_index=True)[1]
 
     # endregion initialization
     prey_index: np.intp = hyenas_fitness.argmin()

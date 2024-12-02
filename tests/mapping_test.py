@@ -3,7 +3,6 @@ import unittest
 import numpy as np
 from source.PSO.particles import node_type
 import source.mapping as mapping
-import source.SHO.hyenas as hyenas
 
 
 class TestMapping(unittest.TestCase):
@@ -40,6 +39,17 @@ class TestMapping(unittest.TestCase):
         """
         self.assertEqual([(0, 1), (2, 0), (3, 4)], mapping.subtract_paths(
             path_b, path_a, path_a_indexes))
+
+    def test_mutate_paths(self):
+        number_of_cities: int = 7
+        for _ in range(20):
+            second = np.arange(number_of_cities, dtype=np.uint32)
+            np.random.shuffle(second)
+            mutation = mapping.mutate(np.arange(number_of_cities, dtype=np.uint32),
+                                      second, 0.6, number_of_cities)
+            self.assertListEqual(list(np.unique(mutation)),
+                                 list(np.arange(number_of_cities)))
+            print(mutation, flush=True)
 
 
 if __name__ == "__main__":
