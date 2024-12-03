@@ -114,9 +114,9 @@ def SHO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
         hyenas_fitness = np.apply_along_axis(
             path_length, 1, hyenas_population, nodes=nodes)
 
-        for i, row in enumerate(hyenas_population):
-            for j, city_index in enumerate(row):
-                hyenas_indexes[i][city_index] = j
+        for i in range(population_size):
+            hyenas_indexes[i] = np.unique(
+                hyenas_population[i], return_index=True)[1]
 
         prey_index = hyenas_fitness.argmin()
         for i, hyena in enumerate(hyenas_population):

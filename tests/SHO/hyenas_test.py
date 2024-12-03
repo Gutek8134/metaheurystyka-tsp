@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from source.SHO.hyenas import SHO, path_length as SHO_path_length, node_type
+from source.SHO.hyenas import SHO
 from source.mapping import node_path_length
 from source.instance_generator import random_instance
 from source.tsp_greedy.parser import parse
