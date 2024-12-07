@@ -38,16 +38,19 @@ class CompareTest(unittest.TestCase):
         greedy_end_time = monotonic_ns()
         array_path = array(greedy_path)
 
+        # More = better, but takes more time
         population_size = 50
         max_iterations = 300
+        # Values between 0 and 1
         pso_alpha = 0.62
         pso_beta = 0.55
         sho_blur_coff = 0.4
+        roa_swap_chance = 0.6
         # Max: instance_size//2
         sho_max_dist_coff = 32
+        # Not sure what's the max value here
         sho_blur_len = 45
         roa_max_speed = 600
-        roa_swap_chance = 0.6
 
         heuristics = (partial(PSO, nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations, alpha=pso_alpha, beta=pso_beta),
                       partial(SHO, nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
@@ -84,16 +87,19 @@ class CompareTest(unittest.TestCase):
         random_end_time = monotonic_ns()
         array_path = array(random_path)
 
+        # More = better, but takes more time
         population_size = 50
         max_iterations = 300
+        # Values between 0 and 1
         pso_alpha = 0.62
         pso_beta = 0.55
         sho_blur_coff = 0.4
+        roa_swap_chance = 0.6
         # Max: instance_size//2
         sho_max_dist_coff = 32
+        # Not sure what's the max value here
         sho_blur_len = 45
         roa_max_speed = 600
-        roa_swap_chance = 0.6
 
         heuristics = (partial(PSO, nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations, alpha=pso_alpha, beta=pso_beta),
                       partial(SHO, nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
