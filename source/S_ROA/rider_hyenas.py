@@ -1,5 +1,4 @@
 import random
-from re import L, S
 import numpy as np
 from numpy.typing import NDArray, ArrayLike
 
@@ -9,7 +8,7 @@ node_type = np.dtype(
     [("index", np.uint32), ("x", np.double), ("y", np.double)])
 
 
-def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population_size: int, max_iterations: int, blur_coefficient: float, max_distance_coefficient: float, blur_length: int = 2, max_speed: int = 600, max_h=1) -> tuple[NDArray[np.uint32], float]:
+def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population_size: int, max_iterations: int, blur_coefficient: float, max_distance_coefficient: float, blur_length: int = 2, max_speed: int = 600, max_h=1, swap_chance: float = 0.6) -> tuple[NDArray[np.uint32], float]:
     # region initialization
     if not isinstance(nodes, np.ndarray):
         nodes = np.array(nodes, node_type)
@@ -141,24 +140,37 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         steering_abscos = np.abs(np.cos(steering_angles))
         max_distance_to_travel = steering_abscos*(1/3*max_iterations)*(
             (gears*(max_speed/5))+(max_speed*accelerators)+((decelerators-1)*max_speed))
-        for i in range(population_size):
-            if activity[i]:
-                if i == leader_index:
-                    continue
+        # for i in range(population_size):
+        #     if activity[i]:
+        #         if i == leader_index:
+        #             continue
 
-                rider_hyenas[i] = np.copy(rider_hyenas[leader_index])
-                for swap_op in reversed(swaps_from_prey[i]):
-                    if np.random.random_sample() <= E:
-                        rider_hyenas[i][[swap_op[0], swap_op[1]]] = rider_hyenas[i][[
-                            swap_op[1], swap_op[0]]]
+        #         rider_hyenas[i] = np.copy(rider_hyenas[leader_index])
+        #         for swap_op in reversed(swaps_from_prey[i]):
+        #             if np.random.random_sample() <= E:
+        #                 rider_hyenas[i][[swap_op[0], swap_op[1]]] = rider_hyenas[i][[
+        #                     swap_op[1], swap_op[0]]]
 
+        leader_found: bool = False
         # Followers update
         for index in followers_indexes[activity[followers_indexes]]:
+            if not leader_found and index == leader_index:
+                leader_found = True
+                continue
+
+            if activity[index]:
+                rider_hyenas[index] = np.copy(rider_hyenas[leader_index])
+                for swap_op in reversed(swaps_from_prey[index]):
+                    if np.random.random_sample() <= E:
+                        rider_hyenas[index][[swap_op[0], swap_op[1]]] = rider_hyenas[index][[
+                            swap_op[1], swap_op[0]]]
+                continue
+
             swaps = subtract_paths(
                 rider_hyenas[index], rider_hyenas[leader_index], leader_indexes)
-            if len(swaps) > max_distance_to_travel[i]:
+            if len(swaps) > max_distance_to_travel[index]:
                 random.shuffle(swaps)
-                swaps = swaps[:max_distance_to_travel[i]-1]
+                swaps = swaps[:max_distance_to_travel[index]-1]
             for swap in swaps:
                 rider_hyenas[index, [swap[0], swap[1]]
                              ] = rider_hyenas[index, [swap[1], swap[0]]]
@@ -168,6 +180,17 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             (2/(1-np.log(rider_hyenas_success_rates /
                          rider_hyenas_success_rates.max())))
         for index in overtakers_indexes[activity[overtakers_indexes]]:
+            if not leader_found and index == leader_index:
+                leader_found = True
+                continue
+
+            if activity[index]:
+                rider_hyenas[index] = np.copy(rider_hyenas[leader_index])
+                for swap_op in reversed(swaps_from_prey[index]):
+                    if np.random.random_sample() <= E:
+                        rider_hyenas[index][[swap_op[0], swap_op[1]]] = rider_hyenas[index][[
+                            swap_op[1], swap_op[0]]]
+                continue
             swaps = subtract_paths(
                 rider_hyenas[index], rider_hyenas[leader_index], leader_indexes)
             for swap in swaps:
@@ -177,6 +200,18 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
 
         # Attackers update
         for index in attackers_indexes[activity[attackers_indexes]]:
+            if not leader_found and index == leader_index:
+                leader_found = True
+                continue
+
+            if activity[index]:
+                rider_hyenas[index] = np.copy(rider_hyenas[leader_index])
+                for swap_op in reversed(swaps_from_prey[index]):
+                    if np.random.random_sample() <= E:
+                        rider_hyenas[index][[swap_op[0], swap_op[1]]] = rider_hyenas[index][[
+                            swap_op[1], swap_op[0]]]
+                continue
+
             swaps = subtract_paths(
                 rider_hyenas[index], rider_hyenas[leader_index], leader_indexes)
             for swap in swaps:
@@ -186,11 +221,22 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
 
         # Bypassers update
         for index in bypassers_indexes[activity[bypassers_indexes]]:
+            if not leader_found and index == leader_index:
+                leader_found = True
+                continue
+
+            if activity[index]:
+                rider_hyenas[index] = np.copy(rider_hyenas[leader_index])
+                for swap_op in reversed(swaps_from_prey[index]):
+                    if np.random.random_sample() <= E:
+                        rider_hyenas[index][[swap_op[0], swap_op[1]]] = rider_hyenas[index][[
+                            swap_op[1], swap_op[0]]]
+                continue
+
             mutated_path: NDArray[np.uint32] = mutate(rider_hyenas[random.randrange(
                 population_size)], rider_hyenas[random.randrange(population_size)], random.random(), number_of_cities)
             swaps: list[tuple[int, int]] = subtract_paths(
                 rider_hyenas[index], mutated_path, np.unique_inverse(mutated_path)[1])
-            swap_chance: float = random.random()
             for swap in swaps:
                 if random.random() <= swap_chance:
                     rider_hyenas[index, [swap[0], swap[1]]
@@ -202,7 +248,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         for i, row in enumerate(rider_hyenas):
             for j, city_index in enumerate(row):
                 rider_hyenas_indexes[i][city_index] = j
-         # Activity
+        # Activity
         activity = np.roll(
             rider_hyenas_success_rates, -1) > rider_hyenas_success_rates[iteration_count % population_size]
 

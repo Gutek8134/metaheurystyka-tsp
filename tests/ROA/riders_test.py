@@ -21,7 +21,7 @@ class TestROA(unittest.TestCase):
 
         length, path = tsp(matrix, nodes[0])
         roa_path, roa_length = ROA(nodes, np.array(
-            path, dtype=np.uint32), 50, 1000)
+            path, dtype=np.uint32), 50, 300)
 
         self.assertEqual(len(set(roa_path)), instance_size)
 
@@ -40,7 +40,7 @@ class TestROA(unittest.TestCase):
         path.insert(0, 0)
         length = node_path_length(path, nodes)
         roa_path, roa_length = ROA(nodes, np.array(
-            path, dtype=np.uint32), 50, 100)
+            path, dtype=np.uint32), 200, 300, swap_chance=0.3)
 
         self.assertEqual(len(set(roa_path)), instance_size)
 

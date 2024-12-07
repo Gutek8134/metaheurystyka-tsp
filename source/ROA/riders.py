@@ -8,7 +8,7 @@ node_type = np.dtype(
     [("index", np.uint32), ("x", np.double), ("y", np.double)])
 
 
-def ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], number_of_riders: int, max_iterations: int, max_speed: int = 600):
+def ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], number_of_riders: int, max_iterations: int, max_speed: int = 600, swap_chance: float = 0.6) -> tuple[NDArray[np.uint32], float]:
     # region initialization
     if not isinstance(nodes, np.ndarray):
         nodes = np.array(nodes, node_type)
@@ -84,7 +84,12 @@ def ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], number_of_
         steering_abscos = np.abs(np.cos(steering_angles))
         max_distance_to_travel = steering_abscos*(1/3*max_iterations)*(
             (gears*(max_speed/5))+(max_speed*accelerators)+((decelerators-1)*max_speed))
+
+        leader_found: bool = False
         for index in followers_indexes:
+            if not leader_found and index == leader_index:
+                leader_found = True
+                continue
             swaps = subtract_paths(
                 riders[index], riders[leader_index], leader_indexes)
             if len(swaps) > max_distance_to_travel[i]:
@@ -98,6 +103,9 @@ def ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], number_of_
         direction_indicators = 1 - \
             (2/(1-np.log(success_rates/success_rates.max())))
         for index in overtakers_indexes:
+            if not leader_found and index == leader_index:
+                leader_found = True
+                continue
             swaps = subtract_paths(
                 riders[index], riders[leader_index], leader_indexes)
             for swap in swaps:
@@ -107,6 +115,9 @@ def ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], number_of_
 
         # Attackers update
         for index in attackers_indexes:
+            if not leader_found and index == leader_index:
+                leader_found = True
+                continue
             swaps = subtract_paths(
                 riders[index], riders[leader_index], leader_indexes)
             for swap in swaps:
@@ -116,11 +127,13 @@ def ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], number_of_
 
         # Bypassers update
         for index in bypassers_indexes:
+            if not leader_found and index == leader_index:
+                leader_found = True
+                continue
             mutated_path: NDArray[np.uint32] = mutate(riders[random.randrange(
                 number_of_riders)], riders[random.randrange(number_of_riders)], random.random(), number_of_cities)
             swaps: list[tuple[int, int]] = subtract_paths(
                 riders[index], mutated_path, np.unique_inverse(mutated_path)[1])
-            swap_chance: float = random.random()
             for swap in swaps:
                 if random.random() <= swap_chance:
                     riders[index, [swap[0], swap[1]]

@@ -63,7 +63,7 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
     """
 
     personal_best_lengths: NDArray[np.double] = np.array(
-        [path_length(nodes, path) for path in personal_bests], dtype=np.double)
+        [path_length(path, nodes) for path in personal_bests], dtype=np.double)
 
     global_best: NDArray[np.uint32]
     """
@@ -90,8 +90,8 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
     for iteration_count in range(max_iterations):
         # Update global best
         global_best = min(personal_bests,
-                          key=lambda x: path_length(nodes, x))
-        global_best_length = path_length(nodes, global_best)
+                          key=lambda x: path_length(x, nodes))
+        global_best_length = path_length(global_best, nodes)
 
         # if iteration_count == 0:
         #     print("Global best", global_best_length)
@@ -128,7 +128,7 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
                         swap_operator[1], swap_operator[0]]]
 
             # Update personal best
-            new_path_length = path_length(nodes, particle_path)
+            new_path_length = path_length(particle_path, nodes)
             # print(i, personal_best_lengths[i], new_path_length)
             if personal_best_lengths[j] > new_path_length:
                 personal_bests[j] = particle_path
@@ -144,7 +144,7 @@ def PSO(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population
         print(f"\riteration {iteration_count+1}/{max_iterations}", end="")
     print()
     global_best = min(personal_bests,
-                      key=lambda x: path_length(nodes, x))
-    global_best_length = path_length(nodes, global_best)
+                      key=lambda x: path_length(x, nodes))
+    global_best_length = path_length(global_best, nodes)
 
     return global_best, global_best_length
