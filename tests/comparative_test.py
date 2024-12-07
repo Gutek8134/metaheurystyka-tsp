@@ -53,8 +53,8 @@ class CompareTest(unittest.TestCase):
                       partial(SHO, nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
                               blur_coefficient=sho_blur_coff, max_distance_coefficient=sho_max_dist_coff, blur_length=sho_blur_len),
                       partial(ROA, nodes=nodes, initial_path=array_path,
-                              number_of_riders=population_size, max_iterations=max_iterations),
-                      partial(S_ROA, nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations, blur_coefficient=sho_blur_coff, max_distance_coefficient=sho_max_dist_coff, blur_length=sho_blur_len))
+                              number_of_riders=population_size, max_iterations=max_iterations, max_speed=roa_max_speed, swap_chance=roa_swap_chance),
+                      partial(S_ROA, nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations, blur_coefficient=sho_blur_coff, max_distance_coefficient=sho_max_dist_coff, blur_length=sho_blur_len, max_speed=roa_max_speed, swap_chance=roa_swap_chance))
 
         with Pool(processes=4) as pool:
             results = pool.map(time_function, heuristics)
