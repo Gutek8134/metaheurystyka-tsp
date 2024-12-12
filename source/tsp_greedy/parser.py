@@ -10,7 +10,7 @@ def parse(input: str) -> tuple[Matrix, list[node]]:
     """index, x coord, y coord"""
 
     for index, line in enumerate(input.splitlines()[1:]):
-        _, x, y = line.split(" ")
+        _, x, y = line.strip().split(" ")
         positions.append((index, float(x), float(y)))
 
     matrix: Matrix = [[] for _ in range(len(positions))]
