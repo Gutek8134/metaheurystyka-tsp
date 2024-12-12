@@ -104,6 +104,10 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         distance_from_prey[i] = len(swaps_from_prey[i])
 
     for iteration_count in range(max_iterations):
+        previous_leader_index = leader_index
+        previous_leader_length = path_length(
+            rider_hyenas[previous_leader_index], nodes)
+
         # Update cluster
         cluster_hyenas_indexes, = (distance_from_prey <= np.random.uniform(
             0.5, 1, (population_size))*max_distance_coefficient).nonzero()
@@ -140,16 +144,6 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         steering_abscos = np.abs(np.cos(steering_angles))
         max_distance_to_travel = steering_abscos*(1/3*max_iterations)*(
             (gears*(max_speed/5))+(max_speed*accelerators)+((decelerators-1)*max_speed))
-        # for i in range(population_size):
-        #     if activity[i]:
-        #         if i == leader_index:
-        #             continue
-
-        #         rider_hyenas[i] = np.copy(rider_hyenas[leader_index])
-        #         for swap_op in reversed(swaps_from_prey[i]):
-        #             if np.random.random_sample() <= E:
-        #                 rider_hyenas[i][[swap_op[0], swap_op[1]]] = rider_hyenas[i][[
-        #                     swap_op[1], swap_op[0]]]
 
         leader_found: bool = False
         # Followers update
@@ -265,6 +259,11 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         decelerators = 1-accelerators
 
         leader_index = rider_hyenas_success_rates.argmin()
+        if leader_index != previous_leader_index:
+            print(f"\nImprovement from {previous_leader_length} ({previous_leader_index}) to "
+                  f"{rider_hyenas_success_rates[leader_index]} ({leader_index})")
+
+        swaps_from_prey = []
         for i, hyena in enumerate(rider_hyenas):
             if i == leader_index:
                 swaps_from_prey.append([])
@@ -285,6 +284,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             distance_from_prey[i] = len(swaps_from_prey[i])
 
         print(f"\riteration {iteration_count+1}/{max_iterations}", end="")
+        print("\n", rider_hyenas, "\n", rider_hyenas_success_rates)
     print()
 
     return rider_hyenas[leader_index], rider_hyenas_success_rates[leader_index]
