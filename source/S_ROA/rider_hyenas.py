@@ -75,6 +75,9 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
     leader_indexes: NDArray[np.uint32] = np.unique(
         rider_hyenas[leader_index], return_index=True)[1]
 
+    not_leader: NDArray[np.bool_] = np.ones(population_size, dtype=np.bool_)
+    not_leader[leader_index] = 0
+
     activity: NDArray[np.bool_] = np.zeros(population_size, dtype=np.bool_)
     # endregion initialization
 
@@ -109,33 +112,49 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             rider_hyenas[previous_leader_index], nodes)
 
         # Update cluster
-        cluster_hyenas_indexes, = (distance_from_prey <= np.random.uniform(
-            0.5, 1, (population_size))*max_distance_coefficient).nonzero()
+        belongs_to_cluster = (distance_from_prey <= np.random.uniform(
+            0.5, 1, (population_size))*max_distance_coefficient)
+        belongs_to_cluster[leader_index] = False
+        cluster_hyenas_indexes, = belongs_to_cluster.nonzero()
         cluster: NDArray[np.uint32]
         if cluster_hyenas_indexes.size > 0:
             cluster = rider_hyenas[cluster_hyenas_indexes]
+            # Counts how many times each city appeared at the position
+            cluster_counts = np.zeros(
+                (number_of_cities, number_of_cities), dtype=np.uint32)
+            for i in range(number_of_cities):
+                counts = np.unique_counts(
+                    cluster[:, i])
+                cluster_counts[i, counts.values] = counts.counts
+            # Technically speaking it's closer to median
+            average_cluster_position = np.zeros(
+                (number_of_cities), dtype=np.uint32)
+
+            # As much as I'd want to vectorize, I'm unable to
+            available_positions = np.ones(number_of_cities, dtype=np.bool_)
+            for i in range(number_of_cities):
+                available_counts = np.where(
+                    available_positions, cluster_counts[i], 0)
+                if available_counts.any():
+                    cumulative_distribution: NDArray[np.float64] = available_counts.cumsum(
+                        dtype=np.float64)/available_counts.sum(dtype=np.float64)
+                    cumulative_distribution[available_counts.nonzero()[
+                        0][-1]] = 1
+                    temp: np.intp = (np.random.random() <=
+                                     cumulative_distribution).nonzero()[0][0]
+                else:
+                    temp: np.intp = np.intp(-1)
+
+                if temp == -1 or not available_positions[temp]:
+                    temp = np.random.choice(available_positions.nonzero()[0])
+                average_cluster_position[i] = temp
+                available_positions[temp] = 0
+            rider_hyenas[cluster_hyenas_indexes[activity[cluster_hyenas_indexes]]
+                         ] = average_cluster_position
+
         else:
             cluster = np.array([], dtype=np.uint32)
-
-        # Counts how many times each city appeared at the position
-        cluster_counts = [np.array([np.count_nonzero(cluster[:, i] == j) for j in range(number_of_cities)], dtype=np.uint32)
-                          for i in range(number_of_cities)]
-
-        # Technically speaking it's closer to median
-        average_cluster_position = np.zeros(
-            (number_of_cities), dtype=np.uint32)
-
-        # As much as I'd want to vectorize, I'm unable to
-        available_positions = np.ones(number_of_cities, dtype=np.uint32)
-        for i in range(number_of_cities):
-            temp = np.where(available_positions > 0,
-                            cluster_counts[i], 0).argmax()
-            if available_positions[temp] == 0:
-                temp = np.where(available_positions == 1)[0][0]
-            average_cluster_position[i] = temp
-            available_positions[temp] = 0
-        rider_hyenas[cluster_hyenas_indexes[activity[cluster_hyenas_indexes]]
-                     ] = average_cluster_position
+            cluster_counts = np.array([])
 
         h: float = max_h - iteration_count*max_h/max_iterations
         E: float = 2*h*np.random.random_sample() - h
@@ -147,7 +166,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
 
         leader_found: bool = False
         # Followers update
-        for index in followers_indexes[activity[followers_indexes]]:
+        for index in followers_indexes:
             if not leader_found and index == leader_index:
                 leader_found = True
                 continue
@@ -173,7 +192,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         direction_indicators = 1 - \
             (2/(1-np.log(rider_hyenas_success_rates /
                          rider_hyenas_success_rates.max())))
-        for index in overtakers_indexes[activity[overtakers_indexes]]:
+        for index in overtakers_indexes:
             if not leader_found and index == leader_index:
                 leader_found = True
                 continue
@@ -193,7 +212,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
                                  ] = rider_hyenas[index, [swap[1], swap[0]]]
 
         # Attackers update
-        for index in attackers_indexes[activity[attackers_indexes]]:
+        for index in attackers_indexes:
             if not leader_found and index == leader_index:
                 leader_found = True
                 continue
@@ -214,7 +233,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
                                  ] = rider_hyenas[index, [swap[1], swap[0]]]
 
         # Bypassers update
-        for index in bypassers_indexes[activity[bypassers_indexes]]:
+        for index in bypassers_indexes:
             if not leader_found and index == leader_index:
                 leader_found = True
                 continue
@@ -259,9 +278,15 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         decelerators = 1-accelerators
 
         leader_index = rider_hyenas_success_rates.argmin()
-        if leader_index != previous_leader_index:
+        if leader_index != previous_leader_index and (path_length(rider_hyenas[leader_index], nodes) - previous_leader_length) < -0.00001:
+            not_leader[leader_index] = 0
+            not_leader[previous_leader_index] = 1
             print(f"\nImprovement from {previous_leader_length} ({previous_leader_index}) to "
                   f"{rider_hyenas_success_rates[leader_index]} ({leader_index})")
+            leader_indexes = np.unique(
+                rider_hyenas[leader_index], return_index=True)[1]
+        else:
+            leader_index = previous_leader_index
 
         swaps_from_prey = []
         for i, hyena in enumerate(rider_hyenas):
@@ -284,7 +309,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             distance_from_prey[i] = len(swaps_from_prey[i])
 
         print(f"\riteration {iteration_count+1}/{max_iterations}", end="")
-        print("\n", rider_hyenas, "\n", rider_hyenas_success_rates)
+        # print("\n", rider_hyenas, "\n", rider_hyenas_success_rates)
     print()
 
     return rider_hyenas[leader_index], rider_hyenas_success_rates[leader_index]
