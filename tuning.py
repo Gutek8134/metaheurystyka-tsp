@@ -12,7 +12,7 @@ from source.tsp_greedy.tsp import tsp
 def random_random():
     instance_size = 10
     _, nodes = parse(random_instance(
-        instance_size, max_x=1000, max_y=1000))
+        instance_size, max_x=50, max_y=50))
     path = list(range(1, instance_size))
     random.shuffle(path)
     path.insert(0, 0)
@@ -20,14 +20,14 @@ def random_random():
     array_path = np.array(path)
     # More = better, but takes more time
     population_size = 10
-    max_iterations = 10
+    max_iterations = 30
     # Values between 0 and 1
-    blur_coff = 0.4
+    blur_coff = 0.7
     swap_chance = 0.6
     # Max: instance_size//2
-    max_dist_coff = 2
+    max_dist_coff = 15
     # Not sure what's the max value here
-    blur_len = 3
+    blur_len = 5
     max_speed = 600
     s_roa_start_time = monotonic_ns()
     s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
@@ -70,16 +70,16 @@ def greedy_berlin52():
     greedy_length, greedy_path = tsp(matrix, nodes[0])
     array_path = np.array(greedy_path)
     # More = better, but takes more time
-    population_size = 5
-    max_iterations = 10
+    population_size = 200
+    max_iterations = 1000
     # Values between 0 and 1
     blur_coff = 0.4
     swap_chance = 0.6
     # Max: instance_size//2
-    max_dist_coff = 0.1
+    max_dist_coff = 25
     # Not sure what's the max value here
     blur_len = 22
-    max_speed = 1
+    max_speed = 1200
     s_roa_start_time = monotonic_ns()
     s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
                                      blur_coefficient=blur_coff, max_distance_coefficient=max_dist_coff, blur_length=blur_len, max_speed=max_speed, swap_chance=swap_chance)
@@ -91,4 +91,4 @@ def greedy_berlin52():
 
 if __name__ == "__main__":
     np.set_printoptions(threshold=sys.maxsize)
-    random_random()
+    greedy_berlin52()
