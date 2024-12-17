@@ -45,15 +45,15 @@ def greedy_random():
     greedy_length, greedy_path = tsp(matrix, nodes[0])
     array_path = np.array(greedy_path)
     # More = better, but takes more time
-    population_size = 50
-    max_iterations = 300
+    population_size = 200
+    max_iterations = 500
     # Values between 0 and 1
-    blur_coff = 0.4
+    blur_coff = 0.55
     swap_chance = 0.6
     # Max: instance_size//2
-    max_dist_coff = 32
+    max_dist_coff = 22
     # Not sure what's the max value here
-    blur_len = 45
+    blur_len = 22
     max_speed = 600
     s_roa_start_time = monotonic_ns()
     s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
@@ -70,23 +70,26 @@ def greedy_berlin52():
     greedy_length, greedy_path = tsp(matrix, nodes[0])
     array_path = np.array(greedy_path)
     # More = better, but takes more time
-    population_size = 200
-    max_iterations = 1000
+    max_iterations = 700
+    population_size = 250
     # Values between 0 and 1
-    blur_coff = 0.4
-    swap_chance = 0.6
+    blur_coff = 0.68
+    swap_chance = 0.75
     # Max: instance_size//2
-    max_dist_coff = 25
+    max_dist_coff = 12
     # Not sure what's the max value here
-    blur_len = 22
-    max_speed = 1200
+    blur_len = 17
+    max_speed = 850
     s_roa_start_time = monotonic_ns()
     s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
                                      blur_coefficient=blur_coff, max_distance_coefficient=max_dist_coff, blur_length=blur_len, max_speed=max_speed, swap_chance=swap_chance)
     s_roa_end_time = monotonic_ns()
 
-    print(f"Greedy: {greedy_length}\n"
-          f"S-ROA: {s_roa_length} in {(s_roa_end_time-s_roa_start_time)/1e9}s")
+    print(f"Settings:\n\t{population_size=}\n\t{blur_coff=}\n\t{swap_chance=}\n\t{max_dist_coff=}\n\t{blur_len=}\n\t{max_speed=}\n"
+          f"Greedy: {greedy_length}\n"
+          f"S-ROA: {s_roa_length} in {(s_roa_end_time -
+                                       s_roa_start_time)/1e9}s\n"
+          "Optimum: 7544")
 
 
 if __name__ == "__main__":
