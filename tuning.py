@@ -76,9 +76,9 @@ def greedy_berlin52():
     blur_coff = 0.68
     swap_chance = 0.75
     # Max: instance_size//2
-    max_dist_coff = 12
-    # Not sure what's the max value here
     blur_len = 17
+    # Not sure what's the max value here
+    max_dist_coff = 12
     max_speed = 850
     s_roa_start_time = monotonic_ns()
     s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
@@ -92,6 +92,118 @@ def greedy_berlin52():
           "Optimum: 7544")
 
 
+def greedy_bier127():
+    with open("bier127.txt") as f:
+        matrix, nodes = parse(f.read())
+    greedy_length, greedy_path = tsp(matrix, nodes[0])
+    array_path = np.array(greedy_path)
+    # More = better, but takes more time
+    max_iterations = 800
+    population_size = 200
+    # Values between 0 and 1
+    blur_coff = 0.47
+    swap_chance = 0.85
+    # Max: instance_size//2
+    blur_len = 45
+    # Not sure what's the max value here
+    max_dist_coff = 34
+    max_speed = 1250
+    s_roa_start_time = monotonic_ns()
+    s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
+                                     blur_coefficient=blur_coff, max_distance_coefficient=max_dist_coff, blur_length=blur_len, max_speed=max_speed, swap_chance=swap_chance)
+    s_roa_end_time = monotonic_ns()
+
+    print(f"Settings:\n\t{population_size=}\n\t{blur_coff=}\n\t{swap_chance=}\n\t{max_dist_coff=}\n\t{blur_len=}\n\t{max_speed=}\n"
+          f"Greedy: {greedy_length}\n"
+          f"S-ROA: {s_roa_length} in {(s_roa_end_time -
+                                       s_roa_start_time)/1e9}s\n"
+          "Optimum: 118282")
+
+
+def greedy_tsp250():
+    with open("tsp250.txt") as f:
+        matrix, nodes = parse(f.read())
+    greedy_length, greedy_path = tsp(matrix, nodes[0])
+    array_path = np.array(greedy_path)
+    # More = better, but takes more time
+    max_iterations = 700
+    population_size = 250
+    # Values between 0 and 1
+    blur_coff = 0.68
+    swap_chance = 0.75
+    # Max: instance_size//2
+    blur_len = 17
+    # Not sure what's the max value here
+    max_dist_coff = 12
+    max_speed = 850
+    s_roa_start_time = monotonic_ns()
+    s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
+                                     blur_coefficient=blur_coff, max_distance_coefficient=max_dist_coff, blur_length=blur_len, max_speed=max_speed, swap_chance=swap_chance)
+    s_roa_end_time = monotonic_ns()
+
+    print(f"Settings:\n\t{population_size=}\n\t{blur_coff=}\n\t{swap_chance=}\n\t{max_dist_coff=}\n\t{blur_len=}\n\t{max_speed=}\n"
+          f"Greedy: {greedy_length}\n"
+          f"S-ROA: {s_roa_length} in {(s_roa_end_time -
+                                       s_roa_start_time)/1e9}s\n"
+          "Optimum: 24246")
+
+
+def greedy_tsp500():
+    with open("tsp500.txt") as f:
+        matrix, nodes = parse(f.read())
+    greedy_length, greedy_path = tsp(matrix, nodes[0])
+    array_path = np.array(greedy_path)
+    # More = better, but takes more time
+    max_iterations = 700
+    population_size = 250
+    # Values between 0 and 1
+    blur_coff = 0.68
+    swap_chance = 0.75
+    # Max: instance_size//2
+    blur_len = 17
+    # Not sure what's the max value here
+    max_dist_coff = 12
+    max_speed = 850
+    s_roa_start_time = monotonic_ns()
+    s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
+                                     blur_coefficient=blur_coff, max_distance_coefficient=max_dist_coff, blur_length=blur_len, max_speed=max_speed, swap_chance=swap_chance)
+    s_roa_end_time = monotonic_ns()
+
+    print(f"Settings:\n\t{population_size=}\n\t{blur_coff=}\n\t{swap_chance=}\n\t{max_dist_coff=}\n\t{blur_len=}\n\t{max_speed=}\n"
+          f"Greedy: {greedy_length}\n"
+          f"S-ROA: {s_roa_length} in {(s_roa_end_time -
+                                       s_roa_start_time)/1e9}s\n"
+          "Optimum: 86789")
+
+
+def greedy_tsp1000():
+    with open("tsp1000.txt") as f:
+        matrix, nodes = parse(f.read())
+    greedy_length, greedy_path = tsp(matrix, nodes[0])
+    array_path = np.array(greedy_path)
+    # More = better, but takes more time
+    max_iterations = 150
+    population_size = 50
+    # Values between 0 and 1
+    blur_coff = 0.68
+    swap_chance = 0.75
+    # Max: instance_size//2
+    blur_len = 170
+    # Not sure what's the max value here
+    max_dist_coff = 120
+    max_speed = 8500
+    s_roa_start_time = monotonic_ns()
+    s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
+                                     blur_coefficient=blur_coff, max_distance_coefficient=max_dist_coff, blur_length=blur_len, max_speed=max_speed, swap_chance=swap_chance)
+    s_roa_end_time = monotonic_ns()
+
+    print(f"Settings:\n\t{population_size=}\n\t{blur_coff=}\n\t{swap_chance=}\n\t{max_dist_coff=}\n\t{blur_len=}\n\t{max_speed=}\n"
+          f"Greedy: {greedy_length}\n"
+          f"S-ROA: {s_roa_length} in {(s_roa_end_time -
+                                       s_roa_start_time)/1e9}s\n"
+          "Optimum: 24246")
+
+
 if __name__ == "__main__":
     np.set_printoptions(threshold=sys.maxsize)
-    greedy_berlin52()
+    greedy_bier127()

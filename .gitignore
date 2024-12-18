@@ -4,3 +4,6 @@ __pycache__/
 *.txt
 
 !requirements.txt
+!berlin52.txt
+!bier127.txt
+!tsp*.txt
