@@ -157,7 +157,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             cluster_counts = np.array([])
 
         h: float = max_h - iteration_count*max_h/max_iterations
-        E: float = 2*h*random.random() - h
+        E: float = abs(2*h*random.random() - h)
         swap_op: tuple[int, int]
 
         steering_abscos = np.abs(np.cos(steering_angles))
