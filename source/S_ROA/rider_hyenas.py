@@ -245,10 +245,10 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
                             swap_op[1], swap_op[0]]]
                 continue
 
-            mutated_path: NDArray[np.uint32] = mutate(blurred_prey, rider_hyenas[random.randrange(population_size)], random.random(), number_of_cities)
+            mutated_path: NDArray[np.uint32] = mutate(blurred_prey, rider_hyenas[random.randrange(population_size)], swap_chance, number_of_cities)
             # rider_hyenas[index] = mutate(rider_hyenas[index], mutated_path, swap_chance, number_of_cities)
             # swaps = swaps_from_prey[index]
-            swaps = subtract_paths(mutate(mutated_path, rider_hyenas[index], random.random(), number_of_cities), rider_hyenas[index], rider_hyenas_indexes[index])
+            swaps = subtract_paths(mutate(mutated_path, rider_hyenas[index], swap_chance, number_of_cities), rider_hyenas[index], rider_hyenas_indexes[index])
             for swap in swaps:
                 if random.random() <= swap_chance:
                     rider_hyenas[index, [swap[0], swap[1]]
