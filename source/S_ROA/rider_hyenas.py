@@ -8,7 +8,7 @@ node_type = np.dtype(
     [("index", np.uint32), ("x", np.double), ("y", np.double)])
 
 
-def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population_size: int, max_iterations: int, blur_coefficient: float, max_distance_coefficient: float, blur_length: int = 2, max_speed: int = 600, max_h=1, swap_chance: float = 0.6) -> tuple[NDArray[np.uint32], float]:
+def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population_size: int, max_iterations: int, blur_coefficient: float, max_distance_coefficient: float, blur_length: int = 2, max_speed: int = 600, max_h=1, swap_chance: float = 0.6, max_iterations_without_improvement: int = 150) -> tuple[NDArray[np.uint32], float]:
     # region initialization
     if not isinstance(nodes, np.ndarray):
         nodes = np.array(nodes, node_type)
@@ -105,6 +105,8 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         swaps_from_prey.append(subtract_paths(
             blurred_prey, hyena, rider_hyenas_indexes[i]))
         distance_from_prey[i] = len(swaps_from_prey[i])
+
+    last_improvement_iteration: int = 0
 
     for iteration_count in range(max_iterations):
         previous_leader_index = leader_index
@@ -279,6 +281,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             not_leader[previous_leader_index] = 1
             print(f"\nImprovement from {previous_leader_length} ({previous_leader_index}) to "
                   f"{rider_hyenas_success_rates[leader_index]} ({leader_index})")
+            last_improvement_iteration = iteration_count
             leader_indexes = np.unique(
                 rider_hyenas[leader_index], return_index=True)[1]
         else:
@@ -305,7 +308,10 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             distance_from_prey[i] = len(swaps_from_prey[i])
 
         print(f"\riteration {iteration_count+1}/{max_iterations}", end="")
-        # print("\n", rider_hyenas, "\n", rider_hyenas_success_rates)
+        if iteration_count-last_improvement_iteration > max_iterations_without_improvement:
+            print(f"\nNo improvement for {iteration_count-last_improvement_iteration}, stopping...", end="")
+            break
+            
     print()
 
     return rider_hyenas[leader_index], rider_hyenas_success_rates[leader_index]
