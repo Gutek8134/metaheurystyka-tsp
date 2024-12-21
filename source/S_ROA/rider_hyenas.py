@@ -8,7 +8,7 @@ node_type = np.dtype(
     [("index", np.uint32), ("x", np.double), ("y", np.double)])
 
 
-def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population_size: int, max_iterations: int, blur_coefficient: float, max_distance_coefficient: float, blur_length: int = 2, max_speed: int = 600, max_h=1, swap_chance: float = 0.6, max_iterations_without_improvement: int = 150) -> tuple[NDArray[np.uint32], float]:
+def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], population_size: int, max_iterations: int, blur_coefficient: float, max_distance_coefficient: float, blur_length: int = 2, max_speed: int = 600, max_h=1, swap_chance: float = 0.6, max_iterations_without_improvement: int = 150, shuffle_instead: bool = False, shuffle_chance: float = 1.) -> tuple[NDArray[np.uint32], float]:
     # region initialization
     if not isinstance(nodes, np.ndarray):
         nodes = np.array(nodes, node_type)
@@ -245,9 +245,10 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
                             swap_op[1], swap_op[0]]]
                 continue
 
-            mutated_path: NDArray[np.uint32] = mutate(rider_hyenas[random.randrange(
-                population_size)], rider_hyenas[random.randrange(population_size)], random.random(), number_of_cities)
-            swaps = swaps_from_prey[index]
+            mutated_path: NDArray[np.uint32] = mutate(blurred_prey, rider_hyenas[random.randrange(population_size)], random.random(), number_of_cities)
+            # rider_hyenas[index] = mutate(rider_hyenas[index], mutated_path, swap_chance, number_of_cities)
+            # swaps = swaps_from_prey[index]
+            swaps = subtract_paths(mutate(mutated_path, rider_hyenas[index], random.random(), number_of_cities), rider_hyenas[index], rider_hyenas_indexes[index])
             for swap in swaps:
                 if random.random() <= swap_chance:
                     rider_hyenas[index, [swap[0], swap[1]]
@@ -259,6 +260,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         for i, row in enumerate(rider_hyenas):
             for j, city_index in enumerate(row):
                 rider_hyenas_indexes[i][city_index] = j
+
         # Activity
         activity = np.roll(
             rider_hyenas_success_rates, -1) > rider_hyenas_success_rates[iteration_count % population_size]
@@ -287,6 +289,25 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         else:
             leader_index = previous_leader_index
 
+        if iteration_count-last_improvement_iteration >= max_iterations_without_improvement:
+            if shuffle_instead:
+                print(f"\nNo improvement for {
+                      iteration_count-last_improvement_iteration} iterations, shuffling...")
+                for i, row in enumerate(rider_hyenas):
+                    if i == leader_index or random.random() > shuffle_chance:
+                        continue
+
+                    np.random.shuffle(rider_hyenas[i])
+                    rider_hyenas_indexes[i] = np.unique(
+                        rider_hyenas[i], return_index=True)[1]
+                last_improvement_iteration = iteration_count
+                rider_hyenas_success_rates = np.apply_along_axis(
+                    path_length, 1, rider_hyenas, nodes=nodes)
+            else:
+                print(f"\nNo improvement for {
+                      iteration_count-last_improvement_iteration} iterations, stopping...", end="")
+                break
+
         swaps_from_prey = []
         for i, hyena in enumerate(rider_hyenas):
             if i == leader_index:
@@ -308,10 +329,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             distance_from_prey[i] = len(swaps_from_prey[i])
 
         print(f"\riteration {iteration_count+1}/{max_iterations}", end="")
-        if iteration_count-last_improvement_iteration >= max_iterations_without_improvement:
-            print(f"\nNo improvement for {iteration_count-last_improvement_iteration} iterations, stopping...", end="")
-            break
-            
+
     print()
 
     return rider_hyenas[leader_index], rider_hyenas_success_rates[leader_index]
