@@ -116,17 +116,17 @@ def greedy_bier127(*, _max_iterations: int | None = None, _population_size: int 
     array_path = np.array(greedy_path)
     # More = better, but takes more time
     max_iterations = _max_iterations or 800
-    population_size = _population_size or 200
+    population_size = _population_size or 250
     # Values between 0 and 1
-    blur_coff = _blur_coff or 0.47
+    blur_coff = _blur_coff or 0.5
     swap_chance = _swap_chance or 0.85
     shuffle_chance = _shuffle or 1.
     # Max: instance_size//2
-    blur_len = _blur_len or 45
+    blur_len = _blur_len or 37
     # Not sure what's the max value here
-    max_dist_coff = _max_distance_coefficient or 34
-    max_speed = _max_speed or 1250
-    max_iterations_without_improvement = _no_improvement_iterations or 200
+    max_dist_coff = _max_distance_coefficient or 55
+    max_speed = _max_speed or 1500
+    max_iterations_without_improvement = _no_improvement_iterations or 130
 
     shuffle = _shuffle is not None
     s_roa_start_time = monotonic_ns()
