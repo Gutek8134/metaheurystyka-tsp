@@ -308,8 +308,8 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             distance_from_prey[i] = len(swaps_from_prey[i])
 
         print(f"\riteration {iteration_count+1}/{max_iterations}", end="")
-        if iteration_count-last_improvement_iteration > max_iterations_without_improvement:
-            print(f"\nNo improvement for {iteration_count-last_improvement_iteration}, stopping...", end="")
+        if iteration_count-last_improvement_iteration >= max_iterations_without_improvement:
+            print(f"\nNo improvement for {iteration_count-last_improvement_iteration} iterations, stopping...", end="")
             break
             
     print()
