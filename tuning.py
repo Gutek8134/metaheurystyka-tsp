@@ -118,11 +118,11 @@ def greedy_bier127(*, _max_iterations: int | None = None, _population_size: int 
     max_iterations = _max_iterations or 800
     population_size = _population_size or 250
     # Values between 0 and 1
-    blur_coff = _blur_coff or 0.5
+    blur_coff = _blur_coff or 0.4
     swap_chance = _swap_chance or 0.85
     shuffle_chance = _shuffle or 1.
     # Max: instance_size//2
-    blur_len = _blur_len or 37
+    blur_len = _blur_len or 45
     # Not sure what's the max value here
     max_dist_coff = _max_distance_coefficient or 55
     max_speed = _max_speed or 1500
