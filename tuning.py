@@ -148,18 +148,18 @@ def greedy_tsp250(*, _max_iterations: int | None = None, _population_size: int |
     greedy_length, greedy_path = tsp(matrix, nodes[0])
     array_path = np.array(greedy_path)
     # More = better, but takes more time
-    max_iterations = _max_iterations or 700
-    population_size = _population_size or 250
+    max_iterations = _max_iterations or 500
+    population_size = _population_size or 300
     # Values between 0 and 1
-    blur_coff = _blur_coff or 0.68
-    swap_chance = _swap_chance or 0.75
+    blur_coff = _blur_coff or 0.115
+    swap_chance = _swap_chance or 0.8
     shuffle_chance = _shuffle or 1.
     # Max: instance_size//2
-    blur_len = _blur_len or 17
+    blur_len = _blur_len or 62
     # Not sure what's the max value here
-    max_dist_coff = _max_distance_coefficient or 12
-    max_speed = _max_speed or 850
-    max_iterations_without_improvement = _no_improvement_iterations or 200
+    max_dist_coff = _max_distance_coefficient or 70
+    max_speed = _max_speed or 1750
+    max_iterations_without_improvement = _no_improvement_iterations or 80
 
     shuffle = _shuffle is not None
     s_roa_start_time = monotonic_ns()
