@@ -172,7 +172,7 @@ def greedy_tsp250(*, _max_iterations: int | None = None, _population_size: int |
           f"Greedy: {greedy_length}\n"
           f"S-ROA: {s_roa_length} in {(s_roa_end_time -
                                        s_roa_start_time)/1e9}s\n"
-          "Optimum: 24246")
+          "Optimum: 12606")
 
 
 def greedy_tsp500(*, _max_iterations: int | None = None, _population_size: int | None = None, _blur_coff: int | None = None, _swap_chance: int | None = None, _blur_len: int | None = None, _max_distance_coefficient: int | None = None, _max_speed: int | None = None, _no_improvement_iterations: int | None = None, _shuffle: bool = False) -> None:
