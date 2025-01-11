@@ -9,6 +9,19 @@ from source.mapping import node_path_length
 from source.instance_generator import random_instance
 from source.tsp_greedy.parser import parse
 from source.tsp_greedy.tsp import tsp
+from numpy.typing import NDArray
+import networkx as nx
+import networkx.drawing as nxdraw
+from matplotlib import pyplot as plt
+
+
+def draw_path(nodes: list, path: NDArray[np.uint32]) -> None:
+    graph = nx.Graph((int(x), int(y)) for x, y in zip(path, np.roll(path, 1)))
+    positions: dict[int, tuple[int, int]] = {}
+    for node in nodes:
+        positions[node[0]] = (node[1], node[2])
+    nxdraw.draw(graph, positions, node_size=3)
+    plt.show()
 
 
 def random_random(*, _max_iterations: int | None = None, _population_size: int | None = None, _blur_coff: int | None = None, _swap_chance: int | None = None, _blur_len: int | None = None, _max_distance_coefficient: int | None = None, _max_speed: int | None = None, _no_improvement_iterations: int | None = None, _shuffle: float | None = None) -> None:
@@ -44,6 +57,8 @@ def random_random(*, _max_iterations: int | None = None, _population_size: int |
     print(f"Random: {random_length}\n"
           f"S-ROA: {s_roa_length} in {(s_roa_end_time-s_roa_start_time)/1e9}s")
 
+    draw_path(nodes, s_roa_path)
+
 
 def greedy_random(*, _max_iterations: int | None = None, _population_size: int | None = None, _blur_coff: int | None = None, _swap_chance: int | None = None, _blur_len: int | None = None, _max_distance_coefficient: int | None = None, _max_speed: int | None = None, _no_improvement_iterations: int | None = None, _shuffle: float | None = None) -> None:
     instance_size = 100
@@ -75,6 +90,8 @@ def greedy_random(*, _max_iterations: int | None = None, _population_size: int |
     print(f"Greedy: {greedy_length}\n"
           f"S-ROA: {s_roa_length} in {(s_roa_end_time-s_roa_start_time)/1e9}s")
 
+    draw_path(nodes, s_roa_path)
+
 
 def greedy_berlin52(*, _max_iterations: int | None = None, _population_size: int | None = None, _blur_coff: int | None = None, _swap_chance: int | None = None, _blur_len: int | None = None, _max_distance_coefficient: int | None = None, _max_speed: int | None = None, _no_improvement_iterations: int | None = None, _shuffle: float | None = None) -> None:
     with open("berlin52.txt") as f:
@@ -82,18 +99,18 @@ def greedy_berlin52(*, _max_iterations: int | None = None, _population_size: int
     greedy_length, greedy_path = tsp(matrix, nodes[0])
     array_path = np.array(greedy_path)
     # More = better, but takes more time
-    max_iterations = _max_iterations or 900
-    population_size = _population_size or 300
+    max_iterations = _max_iterations or 1500
+    population_size = _population_size or 400
     # Values between 0 and 1
-    blur_coff = _blur_coff or 0.55
+    blur_coff = _blur_coff or 0.65
     swap_chance = _swap_chance or 0.87
     shuffle_chance = _shuffle or 1.
     # Max: instance_size//2
-    blur_len = _blur_len or 24
+    blur_len = _blur_len or 26
     # Not sure what's the max value here
-    max_dist_coff = _max_distance_coefficient or 30
-    max_speed = _max_speed or 700
-    max_iterations_without_improvement = _no_improvement_iterations or 200
+    max_dist_coff = _max_distance_coefficient or 28
+    max_speed = _max_speed or 1400
+    max_iterations_without_improvement = _no_improvement_iterations or 300
 
     shuffle = _shuffle is not None
     s_roa_start_time = monotonic_ns()
@@ -108,6 +125,8 @@ def greedy_berlin52(*, _max_iterations: int | None = None, _population_size: int
                                        s_roa_start_time)/1e9}s\n"
           "Optimum: 7544")
 
+    draw_path(nodes, s_roa_path)
+
 
 def greedy_bier127(*, _max_iterations: int | None = None, _population_size: int | None = None, _blur_coff: int | None = None, _swap_chance: int | None = None, _blur_len: int | None = None, _max_distance_coefficient: int | None = None, _max_speed: int | None = None, _no_improvement_iterations: int | None = None, _shuffle: float | None = None) -> None:
     with open("bier127.txt") as f:
@@ -116,16 +135,16 @@ def greedy_bier127(*, _max_iterations: int | None = None, _population_size: int 
     array_path = np.array(greedy_path)
     # More = better, but takes more time
     max_iterations = _max_iterations or 800
-    population_size = _population_size or 250
+    population_size = _population_size or 300
     # Values between 0 and 1
-    blur_coff = _blur_coff or 0.4
-    swap_chance = _swap_chance or 0.85
+    blur_coff = _blur_coff or 0.21
+    swap_chance = _swap_chance or 0.86
     shuffle_chance = _shuffle or 1.
     # Max: instance_size//2
-    blur_len = _blur_len or 45
+    blur_len = _blur_len or 53
     # Not sure what's the max value here
     max_dist_coff = _max_distance_coefficient or 55
-    max_speed = _max_speed or 1500
+    max_speed = _max_speed or 1650
     max_iterations_without_improvement = _no_improvement_iterations or 130
 
     shuffle = _shuffle is not None
@@ -141,6 +160,8 @@ def greedy_bier127(*, _max_iterations: int | None = None, _population_size: int 
                                        s_roa_start_time)/1e9}s\n"
           "Optimum: 118282")
 
+    draw_path(nodes, s_roa_path)
+
 
 def greedy_tsp250(*, _max_iterations: int | None = None, _population_size: int | None = None, _blur_coff: int | None = None, _swap_chance: int | None = None, _blur_len: int | None = None, _max_distance_coefficient: int | None = None, _max_speed: int | None = None, _no_improvement_iterations: int | None = None, _shuffle: float | None = None) -> None:
     with open("tsp250.txt") as f:
@@ -151,14 +172,14 @@ def greedy_tsp250(*, _max_iterations: int | None = None, _population_size: int |
     max_iterations = _max_iterations or 500
     population_size = _population_size or 300
     # Values between 0 and 1
-    blur_coff = _blur_coff or 0.115
+    blur_coff = _blur_coff or 0.135
     swap_chance = _swap_chance or 0.8
     shuffle_chance = _shuffle or 1.
     # Max: instance_size//2
-    blur_len = _blur_len or 62
+    blur_len = _blur_len or 65
     # Not sure what's the max value here
-    max_dist_coff = _max_distance_coefficient or 70
-    max_speed = _max_speed or 1750
+    max_dist_coff = _max_distance_coefficient or 50
+    max_speed = _max_speed or 1950
     max_iterations_without_improvement = _no_improvement_iterations or 80
 
     shuffle = _shuffle is not None
@@ -174,6 +195,8 @@ def greedy_tsp250(*, _max_iterations: int | None = None, _population_size: int |
                                        s_roa_start_time)/1e9}s\n"
           "Optimum: 12606")
 
+    draw_path(nodes, s_roa_path)
+
 
 def greedy_tsp500(*, _max_iterations: int | None = None, _population_size: int | None = None, _blur_coff: int | None = None, _swap_chance: int | None = None, _blur_len: int | None = None, _max_distance_coefficient: int | None = None, _max_speed: int | None = None, _no_improvement_iterations: int | None = None, _shuffle: bool = False) -> None:
     with open("tsp500.txt") as f:
@@ -181,20 +204,20 @@ def greedy_tsp500(*, _max_iterations: int | None = None, _population_size: int |
     greedy_length, greedy_path = tsp(matrix, nodes[0])
     array_path = np.array(greedy_path)
     # More = better, but takes more time
-    max_iterations = _max_iterations or 700
-    population_size = _population_size or 250
+    max_iterations = _max_iterations or 200
+    population_size = _population_size or 400
     # Values between 0 and 1
-    blur_coff = _blur_coff or 0.68
+    blur_coff = _blur_coff or 0.09
     swap_chance = _swap_chance or 0.75
-    shuffle_chance = _shuffle or 1.
+    shuffle_chance = _shuffle or 0.6
     # Max: instance_size//2
-    blur_len = _blur_len or 17
+    blur_len = _blur_len or 90
     # Not sure what's the max value here
-    max_dist_coff = _max_distance_coefficient or 12
-    max_speed = _max_speed or 850
+    max_dist_coff = _max_distance_coefficient or 85
+    max_speed = _max_speed or 2500
 
-    shuffle = _shuffle is not None
-    max_iterations_without_improvement = _no_improvement_iterations or 200
+    shuffle = _shuffle != 0 and _shuffle is not None
+    max_iterations_without_improvement = _no_improvement_iterations or 60
     s_roa_start_time = monotonic_ns()
     s_roa_path, s_roa_length = S_ROA(nodes=nodes, initial_path=array_path, population_size=population_size, max_iterations=max_iterations,
                                      blur_coefficient=blur_coff, max_distance_coefficient=max_dist_coff, blur_length=blur_len, max_speed=max_speed,
@@ -206,6 +229,8 @@ def greedy_tsp500(*, _max_iterations: int | None = None, _population_size: int |
           f"S-ROA: {s_roa_length} in {(s_roa_end_time -
                                        s_roa_start_time)/1e9}s\n"
           "Optimum: 86789")
+
+    draw_path(nodes, s_roa_path)
 
 
 def greedy_tsp1000(*, _max_iterations: int | None = None, _population_size: int | None = None, _blur_coff: int | None = None, _swap_chance: int | None = None, _blur_len: int | None = None, _max_distance_coefficient: int | None = None, _max_speed: int | None = None, _no_improvement_iterations: int | None = None, _shuffle: float | None = None) -> None:
@@ -240,6 +265,8 @@ def greedy_tsp1000(*, _max_iterations: int | None = None, _population_size: int 
                                        s_roa_start_time)/1e9}s\n"
           "Optimum: 24246")
 
+    draw_path(nodes, s_roa_path)
+
 
 if __name__ == "__main__":
     np.set_printoptions(threshold=sys.maxsize)
@@ -265,7 +292,7 @@ if __name__ == "__main__":
     if isinstance(arguments.swap_chance, float) and not (0 < arguments.swap_chance < 1):
         raise ValueError(f"Argument swap_chance has to be a number between 0 and 1. It is {
                          arguments.swap_chance}.")
-    if isinstance(arguments.shuffle, float) and not (0 < arguments.shuffle < 1):
+    if isinstance(arguments.shuffle, float) and not (0 <= arguments.shuffle <= 1):
         raise ValueError(f"Argument shuffle has to be a number between 0 and 1. It is {
                          arguments.shuffle}.")
 

@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 import random
 
 type index = int
-type node = tuple[index, float, float]
+type node = tuple[index, int, int]
 type Matrix = list[list[node]]
 
 rng: np.random.Generator = np.random.default_rng()
@@ -81,7 +81,7 @@ def mutate(path_a: NDArray[np.uint32], path_b: NDArray[np.uint32], factor: float
 
 
 def random_swap_sequence(number_of_cities: int, length: int) -> NDArray[np.uint32]:
-    return np.asarray(rng.choice(a=number_of_cities, size=(2, length), replace=False), dtype=np.uint32)
+    return np.asarray(rng.choice(a=number_of_cities, size=(2, length), replace=True), dtype=np.uint32)
 
 
 def path_length(path: NDArray[np.uint32], nodes) -> float:
