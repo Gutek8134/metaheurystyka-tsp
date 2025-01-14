@@ -7,12 +7,29 @@ from math import sqrt
 import numpy as np
 from numpy.typing import NDArray
 import random
+import networkx as nx
+import networkx.drawing as nxdraw
+from matplotlib import pyplot as plt
+
 
 type index = int
 type node = tuple[index, int, int]
 type Matrix = list[list[node]]
 
 rng: np.random.Generator = np.random.default_rng()
+
+filenum: int = 0
+
+
+def save_path(nodes: list, path: NDArray[np.uint32]) -> None:
+    global filenum
+    graph = nx.Graph((int(x), int(y)) for x, y in zip(path, np.roll(path, 1)))
+    positions: dict[int, tuple[int, int]] = {}
+    for node in nodes:
+        positions[node[0]] = (node[1], node[2])
+    nxdraw.draw(graph, positions, node_size=3)
+    plt.savefig(f"figure_{(filenum := filenum+1)}")
+    plt.close()
 
 
 def random_paths(number_of_paths: int, number_of_cities: int) -> set[tuple[int, ...]]:

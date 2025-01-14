@@ -2,7 +2,7 @@ import random
 import numpy as np
 from numpy.typing import NDArray, ArrayLike
 
-from source.mapping import mutate, path_difference_length, random_paths, path_length, random_swap_sequence, subtract_paths
+from source.mapping import mutate, path_difference_length, random_paths, path_length, random_swap_sequence, save_path, subtract_paths
 
 node_type = np.dtype(
     [("index", np.uint32), ("x", np.double), ("y", np.double)])
@@ -86,7 +86,8 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
         (population_size), dtype=np.uint32)
     swaps_from_prey: list[list[tuple[int, int]]] = []
 
-    blurred_prey: NDArray[np.uint32] = np.zeros((population_size, number_of_cities), dtype=np.uint32)
+    blurred_prey: NDArray[np.uint32] = np.zeros(
+        (population_size, number_of_cities), dtype=np.uint32)
     for i, hyena in enumerate(rider_hyenas):
         if i == leader_index:
             swaps_from_prey.append([])
@@ -245,10 +246,12 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
                             swap_op[1], swap_op[0]]]
                 continue
 
-            mutated_path: NDArray[np.uint32] = mutate(blurred_prey[index], rider_hyenas[random.randrange(population_size)], swap_chance, number_of_cities)
+            mutated_path: NDArray[np.uint32] = mutate(blurred_prey[index], rider_hyenas[random.randrange(
+                population_size)], swap_chance, number_of_cities)
             # rider_hyenas[index] = mutate(rider_hyenas[index], mutated_path, swap_chance, number_of_cities)
             # swaps = swaps_from_prey[index]
-            swaps = subtract_paths(mutate(mutated_path, rider_hyenas[index], swap_chance, number_of_cities), rider_hyenas[index], rider_hyenas_indexes[index])
+            swaps = subtract_paths(mutate(
+                mutated_path, rider_hyenas[index], swap_chance, number_of_cities), rider_hyenas[index], rider_hyenas_indexes[index])
             for swap in swaps:
                 if random.random() <= swap_chance:
                     rider_hyenas[index, [swap[0], swap[1]]
@@ -283,6 +286,7 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             not_leader[previous_leader_index] = 1
             print(f"\nImprovement from {previous_leader_length} ({previous_leader_index}) to "
                   f"{rider_hyenas_success_rates[leader_index]} ({leader_index})")
+            # save_path(list(nodes), rider_hyenas[leader_index])
             last_improvement_iteration = iteration_count
             leader_indexes = np.unique(
                 rider_hyenas[leader_index], return_index=True)[1]
@@ -319,8 +323,8 @@ def S_ROA(nodes: NDArray | ArrayLike, initial_path: NDArray[np.uint32], populati
             blurred_prey[i] = np.copy(rider_hyenas[leader_index])
             swaps_array: NDArray[np.uint32] = random_swap_sequence(
                 number_of_cities, blur_length)[:, np.random.random(blur_length) <= blur_coefficient]
-            blurred_prey[i,[swaps_array[0], swaps_array[1]]
-                         ] = blurred_prey[i,[swaps_array[1], swaps_array[0]]]
+            blurred_prey[i, [swaps_array[0], swaps_array[1]]
+                         ] = blurred_prey[i, [swaps_array[1], swaps_array[0]]]
 
             # Calculates distance based on the altered position
             swaps_from_prey.append(subtract_paths(

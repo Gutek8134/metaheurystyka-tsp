@@ -2,8 +2,10 @@
 __pycache__/
 .venv/
 *.txt
+*.png
 
 !requirements.txt
 !berlin52.txt
 !bier127.txt
 !tsp*.txt
+!random*.txt
